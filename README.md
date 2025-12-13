@@ -1,19 +1,46 @@
-# Welcome to Defold
+# N28S Defold Example
 
-This project was created from the "desktop" project template. This means that the settings in ["game.project"](defold://open?path=/game.project) have been changed to be suitable for a desktop game:
+This repository demonstrates how to use **n28s** (No More Global Functions in Scripts) inside a Defold project. The helper module (`n28s.lua`) lets you keep your gameplay logic encapsulated in a regular Lua table instead of spreading Defold lifecycle callbacks (`init`, `update`, `on_input`, etc.) over the global scope. It is a tiny drop-in utility inspired by [Lerg's approach](https://gist.github.com/Lerg/888c7df3844ab38cc39ef81d1c786da4) and trimmed down for simplicity.
 
-- The screen size is set to 1280x720
-- Projection is set to Fixed Fit
-- macOS and Windows icons are set
-- Mouse clicks are bound to action "touch"
-- A simple script in a game object is set up to receive and react to input
+Keeping the script APIs on a table also makes auto-completion and type hints work better in editors such as VS Code or JetBrains IDEs—the tooling understands methods on explicit tables far more reliably than anonymous global callbacks with implicit `self`.
 
-[Build and run](defold://project.build) to see it in action. You can of course alter these settings to fit your needs.
+## What the sample does
+- Loads `n28s.lua` from the project root.
+- Defines a script table in `main/main.script`, registers it with `N28S.register`, and delegates the Defold callbacks through that table.
+- Shows how to acquire input focus, set a fixed-fit projection, and react to the `touch` input action without leaking globals.
 
-Check out [the documentation pages](https://defold.com/learn) for examples, tutorials, manuals and API docs.
+```lua
+local N28S = require "n28s"
 
-If you run into trouble, help is available in [our forum](https://forum.defold.com).
+local Script = {}
 
-Happy Defolding!
+function Script:init(self)
+	self.go_self = self
+	msg.post(".", "acquire_input_focus")
+	msg.post("@render:", "use_fixed_fit_projection", { near = -1, far = 1 })
+end
 
----
+function Script:on_input(action_id, action)
+	if action_id == hash("touch") and action.pressed then
+		print("Touch!")
+	end
+end
+
+N28S.register(Script)
+```
+
+
+## Using n28s in your own scripts
+1. Copy `n28s.lua` into your project (keep it somewhere in the Lua module search path, e.g., the project root or `libs/`).
+2. `require "n28s"` inside any script file.
+3. Place lifecycle functions (`init`, `update`, `fixed_update`, `on_message`, `on_input`, `on_reload`, `final`) as methods on a Lua table.
+4. Call `N28S.register(MyScriptTable)` once. The helper asserts that no global callbacks are already defined, ensuring a single source of truth per script file.
+
+This pattern keeps state localized, enables reuse across game objects, and makes Lua tooling (linters, unit tests, IDE completion) easier to apply since the script logic is regular table methods instead of hidden global functions.
+
+## Folder layout
+- `main/main.script` – example game object script that uses n28s.
+- `n28s.lua` – the helper module described above.
+- `game.project`, `assets`, `input` – standard Defold desktop template files.
+
+Feel free to extend the main script or replace it with your own gameplay logic. As long as you register your table with `N28S.register`, Defold will keep calling into your encapsulated script without cluttering the global namespace.
