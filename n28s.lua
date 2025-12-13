@@ -1,9 +1,8 @@
 -- NoMoreGlobalFunctionsInScripts
---inspired by https://gist.github.com/Lerg/888c7df3844ab38cc39ef81d1c786da4
--- For some time i use more complex version that can register multiple script
---https://github.com/d954mas/game-varvars-jam-5/blob/master/libs/n28s.lua
---But i don't like it and move to more simple version.
---
+-- inspired by https://gist.github.com/Lerg/888c7df3844ab38cc39ef81d1c786da4
+-- I used a more complex version that could register multiple scripts for a while:
+-- https://github.com/d954mas/game-varvars-jam-5/blob/master/libs/n28s.lua
+-- but I didn’t like it, so I switched back to a simpler one.
 
 local M = {}
 
