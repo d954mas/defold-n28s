@@ -14,8 +14,8 @@ local N28S = require "n28s"
 
 local Script = {}
 
-function Script:init(self)
-	self.go_self = self
+function Script:init(go_self)
+	self.go_self = go_self
 	msg.post(".", "acquire_input_focus")
 	msg.post("@render:", "use_fixed_fit_projection", { near = -1, far = 1 })
 end
