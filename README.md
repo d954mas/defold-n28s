@@ -4,6 +4,8 @@ This repository demonstrates how to use **n28s** (No More Global Functions in Sc
 
 Keeping the script APIs on a table also makes auto-completion and type hints work better in editors such as VS Code or JetBrains IDEs—the tooling understands methods on explicit tables far more reliably than anonymous global callbacks with implicit `self`.
 
+Defold injects a userdata `self` into callbacks by default, but storing your state on a plain Lua table and passing that around keeps all lookups inside Lua and is measurably faster than going through the userdata wrapper.
+
 ## What the sample does
 - Loads `n28s.lua` from the project root.
 - Defines a script table in `main/main.script`, registers it with `N28S.register`, and delegates the Defold callbacks through that table.
